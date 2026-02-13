@@ -1,0 +1,108 @@
+{
+  "categories": [
+    {
+      "name": "AI Araçları",
+      "keywords": [
+        "chatgpt alternatifleri 2026",
+        "ücretsiz ai yazma araçları",
+        "ai görsel oluşturma programları",
+        "ai kod yazma asistanları",
+        "ai sunum hazırlama araçları",
+        "ai video düzenleme programları",
+        "ai ses klonlama araçları",
+        "ai çeviri araçları",
+        "ai not alma uygulamaları",
+        "ai araştırma asistanları"
+      ],
+      "tone": "bilgilendirici, samimi ve pratik"
+    },
+    {
+      "name": "Verimlilik ve Üretkenlik",
+      "keywords": [
+        "zaman yönetimi teknikleri",
+        "pomodoro tekniği nasıl uygulanır",
+        "dijital minimalizm",
+        "odaklanma teknikleri",
+        "iş takip uygulamaları",
+        "proje yönetimi araçları",
+        "uzaktan çalışma ipuçları",
+        "toplantı verimliliği",
+        "e-posta yönetimi",
+        "görev önceliklendirme"
+      ],
+      "tone": "motive edici, pratik ve uygulanabilir"
+    },
+    {
+      "name": "Otomasyon",
+      "keywords": [
+        "iş süreçleri otomasyonu",
+        "no-code otomasyon araçları",
+        "zapier alternatifleri",
+        "sosyal medya otomasyonu",
+        "e-posta otomasyonu",
+        "veri toplama otomasyonu",
+        "rapor otomasyonu",
+        "müşteri hizmetleri otomasyonu",
+        "chatbot oluşturma",
+        "workflow otomasyonu"
+      ],
+      "tone": "teknik ama anlaşılır, çözüm odaklı"
+    },
+    {
+      "name": "Dijital Pazarlama",
+      "keywords": [
+        "seo ipuçları 2026",
+        "içerik pazarlama stratejileri",
+        "sosyal medya algoritmaları",
+        "influencer marketing",
+        "e-posta pazarlama",
+        "google ads optimizasyonu",
+        "dönüşüm oranı artırma",
+        "landing page tasarımı",
+        "a/b test örnekleri",
+        "pazarlama otomasyonu"
+      ],
+      "tone": "profesyonel, veri odaklı ve stratejik"
+    },
+    {
+      "name": "Teknoloji Trendleri",
+      "keywords": [
+        "yapay zeka trendleri 2026",
+        "web3 nedir",
+        "metaverse gelişmeleri",
+        "blockchain kullanım alanları",
+        "quantum computing",
+        "5g teknolojisi",
+        "iot uygulamaları",
+        "siber güvenlik ipuçları",
+        "bulut bilişim",
+        "edge computing"
+      ],
+      "tone": "bilgilendirici, geleceğe dönük ve heyecan verici"
+    }
+  ],
+  "settings": {
+    "minWordCount": 1500,
+    "maxWordCount": 2500,
+    "includeFAQ": true,
+    "faqCount": 5,
+    "includeImages": true,
+    "imageCount": 1,
+    "includeYouTubeVideo": true,
+    "includeExternalLinks": true,
+    "externalLinkCount": 2,
+    "authoritativeSources": [
+      "wikipedia.org",
+      "techcrunch.com",
+      "wired.com",
+      "theverge.com",
+      "arstechnica.com",
+      "mit.edu",
+      "harvard.edu",
+      "forbes.com",
+      "bloomberg.com",
+      "reuters.com"
+    ],
+    "internalLinkCount": 2
+  }
+}

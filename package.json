@@ -1,0 +1,48 @@
+{
+  "name": "autonomous-ai-blog",
+  "version": "1.0.0",
+  "description": "Otonom AI blog sistemi - AI Araçları ve Verimlilik",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "setup": "node scripts/quick-start.js",
+    "db:setup": "node scripts/setup-database.js",
+    "generate:article": "node automation/content-generator.js",
+    "generate:image": "node automation/image-generator.js",
+    "automation": "node automation/scheduler.js",
+    "automation:start": "pm2 start automation/scheduler.js --name ai-blog-automation",
+    "test:apis": "node scripts/test-apis.js",
+    "logs": "pm2 logs ai-blog-automation",
+    "logs:errors": "pm2 logs ai-blog-automation --err"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "groq-sdk": "^0.7.0",
+    "googleapis": "^140.0.0",
+    "twitter-api-v2": "^1.17.0",
+    "axios": "^1.7.0",
+    "node-cron": "^3.0.3",
+    "better-sqlite3": "^11.0.0",
+    "sharp": "^0.33.0",
+    "rss": "^1.2.2",
+    "sitemap": "^8.0.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "postsPerDay": 3,
+  "publishHours": ["09:00", "14:00", "19:00"],
+  "timezone": "Europe/Istanbul",
+  "autoPublish": true,
+  "weekendPublishing": true,
+  "contentSettings": {
+    "minWordCount": 1500,
+    "maxWordCount": 2500,
+    "readingLevel": "intermediate",
+    "language": "tr"
+  },
+  "seoSettings": {
+    "autoIndex": true,
+    "pingGoogle": true,
+    "pingBing": true,
+    "updateSitemapInterval": 360,
+    "updateRSSInterval": 360
+  },
+  "socialMediaSettings": {
+    "autoShare": true,
+    "platforms": {
+      "twitter": {
+        "enabled": true,
+        "delay": 0
+      },
+      "facebook": {
+        "enabled": true,
+        "delay": 300
+      },
+      "linkedin": {
+        "enabled": true,
+        "delay": 600
+      },
+      "pinterest": {
+        "enabled": false,
+        "delay": 900
+      }
+    }
+  },
+  "imageSettings": {
+    "autoGenerate": true,
+    "provider": "pollinations",
+    "fallbackProvider": "placeholder",
+    "width": 1200,
+    "height": 630,
+    "quality": 85
+  }
+}

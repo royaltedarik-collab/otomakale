@@ -1,0 +1,122 @@
+name: Automated Content Generation
+
+on:
+  schedule:
+    # Her gün 09:00, 14:00, 19:00 (Türkiye saati UTC+3 = 06:00, 11:00, 16:00 UTC)
+    - cron: '0 6 * * *'   # 09:00 TR
+    - cron: '0 11 * * *'  # 14:00 TR
+    - cron: '0 16 * * *'  # 19:00 TR
+  
+  # Manuel tetikleme için
+  workflow_dispatch:
+
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Create directories
+        run: |
+          mkdir -p database
+          mkdir -p public/images
+          mkdir -p logs
+      
+      - name: Setup database
+        run: npm run db:setup
+      
+      - name: Generate article
+        id: generate
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          SITE_DESCRIPTION: ${{ secrets.SITE_DESCRIPTION }}
+          DATABASE_PATH: ./database/blog.db
+          AUTO_PUBLISH: true
+          POSTS_PER_DAY: 3
+          PUBLISH_HOURS: 09,14,19
+          TIMEZONE: Europe/Istanbul
+          MIN_WORD_COUNT: 1500
+          MAX_WORD_COUNT: 2500
+          INCLUDE_FAQ: true
+          INCLUDE_IMAGES: true
+          IMAGE_API: pollinations
+          IMAGE_WIDTH: 1200
+          IMAGE_HEIGHT: 630
+          NODE_ENV: production
+        run: |
+          node automation/content-generator.js > /tmp/generate.log 2>&1
+          cat /tmp/generate.log
+          # Article ID'yi çıkar (son satırdan)
+          ARTICLE_ID=$(grep "ID:" /tmp/generate.log | tail -1 | awk '{print $NF}')
+          echo "ARTICLE_ID=$ARTICLE_ID" >> $GITHUB_OUTPUT
+          echo "Generated article ID: $ARTICLE_ID"
+      
+      - name: SEO and Indexing
+        if: steps.generate.outputs.ARTICLE_ID != ''
+        env:
+          GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
+          GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          DATABASE_PATH: ./database/blog.db
+          AUTO_INDEX: true
+          PING_GOOGLE: true
+          PING_BING: true
+          NODE_ENV: production
+        run: |
+          node automation/seo-indexer.js ${{ steps.generate.outputs.ARTICLE_ID }}
+      
+      - name: Social Media Sharing
+        if: steps.generate.outputs.ARTICLE_ID != ''
+        env:
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
+          FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
+          FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+          LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
+          LINKEDIN_CLIENT_SECRET: ${{ secrets.LINKEDIN_CLIENT_SECRET }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+          DATABASE_PATH: ./database/blog.db
+          NODE_ENV: production
+        run: |
+          node automation/social-poster.js ${{ steps.generate.outputs.ARTICLE_ID }}
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blog-data-${{ github.run_number }}
+          path: |
+            database/
+            public/images/
+            logs/
+          retention-days: 7
+      
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Article generated and published successfully!"
+          echo "Article ID: ${{ steps.generate.outputs.ARTICLE_ID }}"
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Workflow failed. Check logs for details."
