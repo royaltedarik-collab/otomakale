@@ -427,10 +427,10 @@ async function main() {
       require('fs').writeFileSync('/tmp/article_id.txt', articleId.toString());
     }
     
-    // Görsel üretimi tetikle
+    // Görsel üretimi tetikle (şimdilik devre dışı - SQLite bağımlılığı var)
     if (process.env.INCLUDE_IMAGES === 'true') {
-      console.log('🎨 Görsel üretimi başlatılıyor...');
-      require('./image-generator').generateImage(articleId, title, topic.keyword);
+      console.log('⚠️  Görsel üretimi şimdilik devre dışı (database entegrasyonu gerekli)');
+      // require('./image-generator').generateImage(articleId, title, topic.keyword);
     }
     
     return articleId;
