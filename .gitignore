@@ -3,6 +3,12 @@ node_modules/
 package-lock.json
 yarn.lock
 
+# Next.js
+.next/
+out/
+build/
+dist/
+
 # Environment variables
 .env
 .env.local
