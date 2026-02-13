@@ -7,19 +7,69 @@
 
 require('dotenv').config();
 const Groq = require('groq-sdk');
-const Database = require('better-sqlite3');
 const fs = require('fs');
 const path = require('path');
 
 // Konfigürasyon - Sadece Groq kullanıyoruz
+console.log('🚀 Content Generator başlatılıyor...');
+console.log('📁 Çalışma dizini:', process.cwd());
+console.log('🔑 Environment variables:');
+console.log('  - GROQ_API_KEY:', process.env.GROQ_API_KEY ? '✅ Tanımlı' : '❌ Tanımlı değil');
+console.log('  - DATABASE_PATH:', process.env.DATABASE_PATH || '❌ Tanımlı değil');
+console.log('  - NODE_ENV:', process.env.NODE_ENV || 'development');
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const db = new Database(process.env.DATABASE_PATH);
+
+// JSON database kullan (SQLite yerine)
+const dbPath = process.env.DATABASE_PATH || './database/articles.json';
+const dbDir = path.dirname(dbPath);
+
+// Database dizinini oluştur
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+  console.log('✅ Database dizini oluşturuldu:', dbDir);
+}
+
+// Database dosyasını oluştur veya yükle
+let articles = [];
+if (fs.existsSync(dbPath)) {
+  articles = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+  console.log('✅ Mevcut database yüklendi:', articles.length, 'makale');
+} else {
+  fs.writeFileSync(dbPath, JSON.stringify([], null, 2));
+  console.log('✅ Yeni database oluşturuldu');
+}
+
+// Database helper fonksiyonları
+const db = {
+  insert: (article) => {
+    article.id = articles.length + 1;
+    article.created_at = new Date().toISOString();
+    articles.push(article);
+    fs.writeFileSync(dbPath, JSON.stringify(articles, null, 2));
+    return article;
+  },
+  getAll: () => articles,
+  getById: (id) => articles.find(a => a.id === id)
+};
 
 // Groq API kontrolü
 if (!process.env.GROQ_API_KEY) {
-  console.error('❌ GROQ_API_KEY bulunamadı! .env dosyasını kontrol edin.');
+  console.error('❌ HATA: GROQ_API_KEY environment variable tanımlı değil!');
+  console.error('GitHub Settings → Secrets → Actions → GROQ_API_KEY ekleyin');
+  console.error('Groq Console: https://console.groq.com/');
   process.exit(1);
 }
+
+console.log('✅ GROQ_API_KEY bulundu');
+
+// Database path kontrolü
+if (!process.env.DATABASE_PATH) {
+  console.error('❌ HATA: DATABASE_PATH tanımlı değil!');
+  process.exit(1);
+}
+
+console.log('✅ DATABASE_PATH:', process.env.DATABASE_PATH);
 
 // Konular ve anahtar kelimeler
 const topics = require('../config/topics.json');
@@ -258,28 +308,26 @@ function createSlug(title) {
  * Makaleyi veritabanına kaydet
  */
 function saveArticle(article) {
-  const stmt = db.prepare(`
-    INSERT INTO articles (
-      title, slug, content, meta_description, category, keyword, 
-      youtube_video, external_links, status, created_at
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+  const newArticle = {
+    id: articles.length + 1,
+    title: article.title,
+    slug: article.slug,
+    content: article.content,
+    meta_description: article.metaDescription,
+    category: article.category,
+    keyword: article.keyword,
+    youtube_video: article.youtubeVideo || null,
+    external_links: article.externalLinks || [],
+    status: process.env.AUTO_PUBLISH === 'true' ? 'published' : 'draft',
+    created_at: new Date().toISOString()
+  };
   
-  const result = stmt.run(
-    article.title,
-    article.slug,
-    article.content,
-    article.metaDescription,
-    article.category,
-    article.keyword,
-    article.youtubeVideo || null,
-    article.externalLinks ? JSON.stringify(article.externalLinks) : null,
-    process.env.AUTO_PUBLISH === 'true' ? 'published' : 'draft',
-    new Date().toISOString()
-  );
+  articles.push(newArticle);
+  fs.writeFileSync(dbPath, JSON.stringify(articles, null, 2));
   
-  return result.lastInsertRowid;
+  console.log('💾 Makale database\'e kaydedildi');
+  
+  return newArticle.id;
 }
 
 /**
