@@ -191,15 +191,26 @@ export default function Home() {
           gap: '2rem'
         }}>
           {demoArticles.map((article) => (
-            <article
+            <a
               key={article.id}
+              href={`/blog/${article.id}`}
               style={{
                 background: 'white',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 transition: 'transform 0.2s, box-shadow 0.2s',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'block'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
               }}
             >
               <div style={{
@@ -253,7 +264,7 @@ export default function Home() {
                   <span>⏱️ {article.readTime} okuma</span>
                 </div>
               </div>
-            </article>
+            </a>
           ))}
         </div>
 
