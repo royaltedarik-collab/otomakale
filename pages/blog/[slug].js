@@ -1,8 +1,93 @@
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 export default function BlogPost() {
   const router = useRouter();
   const { slug } = router.query;
+  const [adSettings, setAdSettings] = useState(null);
+
+  // Reklam ayarlarını yükle
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const settings = localStorage.getItem('adSettings');
+      if (settings) {
+        setAdSettings(JSON.parse(settings));
+      }
+    }
+  }, []);
+
+  // Reklam gösterme fonksiyonu
+  const renderAd = (position) => {
+    if (!adSettings) return null;
+
+    // Özel kod aktifse
+    if (adSettings.customCode?.enabled) {
+      const codeMap = {
+        top: adSettings.customCode.articleTopCode,
+        middle: adSettings.customCode.articleTopCode, // Orta için de aynı kodu kullan
+        bottom: adSettings.customCode.articleBottomCode
+      };
+      
+      const code = codeMap[position];
+      
+      if (code) {
+        return (
+          <div style={{
+            margin: '3rem 0',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '0.75rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+              REKLAM
+            </div>
+            <div dangerouslySetInnerHTML={{ __html: code }} />
+          </div>
+        );
+      }
+    }
+
+    // Google AdSense aktifse
+    if (adSettings.googleAdsense?.enabled && adSettings.googleAdsense.publisherId) {
+      const slotId = adSettings.googleAdsense.adSlots[position];
+      
+      if (slotId) {
+        return (
+          <div style={{ margin: '3rem 0', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.75rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+              REKLAM
+            </div>
+            <ins
+              className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client={adSettings.googleAdsense.publisherId}
+              data-ad-slot={slotId}
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            />
+          </div>
+        );
+      }
+    }
+
+    // Placeholder
+    return (
+      <div style={{
+        background: '#f8f9fa',
+        border: '1px dashed #dee2e6',
+        borderRadius: '8px',
+        padding: '2rem',
+        textAlign: 'center',
+        margin: '3rem 0',
+        color: '#6c757d'
+      }}>
+        <div style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>REKLAM ALANI</div>
+        <div style={{ fontSize: '0.9rem' }}>
+          {position === 'top' && 'Üst Reklam (728x90 veya Responsive)'}
+          {position === 'middle' && 'Orta Reklam (300x250 veya Responsive)'}
+          {position === 'bottom' && 'Alt Reklam (728x90 veya Responsive)'}
+        </div>
+      </div>
+    );
+  };
 
   // Demo makale - Gerçek veri database'den gelecek
   const article = {
@@ -12,6 +97,7 @@ export default function BlogPost() {
     readTime: "8 dk",
     author: "TeknoVeAI Editör",
     image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=600&fit=crop",
+    youtubeVideoId: "aircAruvnKk", // Demo video ID
     content: `
       <p>Yapay zeka teknolojisi hızla gelişirken, ChatGPT'ye alternatif olarak kullanabileceğiniz birçok güçlü araç ortaya çıktı. Bu makalede, 2026'da öne çıkan ve bazıları tamamen ücretsiz olan en iyi AI yazma araçlarını inceleyeceğiz.</p>
 
@@ -181,18 +267,7 @@ export default function BlogPost() {
         }} />
 
         {/* Ad Slot 1 - Top of Article */}
-        <div id="ad-top" style={{
-          background: '#f8f9fa',
-          border: '1px dashed #dee2e6',
-          borderRadius: '8px',
-          padding: '2rem',
-          textAlign: 'center',
-          marginBottom: '3rem',
-          color: '#6c757d'
-        }}>
-          <div style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>REKLAM</div>
-          <div style={{ fontSize: '0.9rem' }}>Reklam Alanı (728x90 veya Responsive)</div>
-        </div>
+        {renderAd('top')}
 
         {/* Content */}
         <div 
@@ -205,18 +280,7 @@ export default function BlogPost() {
         />
 
         {/* Ad Slot 2 - Middle of Article */}
-        <div id="ad-middle" style={{
-          background: '#f8f9fa',
-          border: '1px dashed #dee2e6',
-          borderRadius: '8px',
-          padding: '2rem',
-          textAlign: 'center',
-          margin: '3rem 0',
-          color: '#6c757d'
-        }}>
-          <div style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>REKLAM</div>
-          <div style={{ fontSize: '0.9rem' }}>Reklam Alanı (300x250 veya Responsive)</div>
-        </div>
+        {renderAd('middle')}
 
         {/* Tags */}
         <div style={{
@@ -248,18 +312,48 @@ export default function BlogPost() {
         </div>
 
         {/* Ad Slot 3 - Bottom of Article */}
-        <div id="ad-bottom" style={{
-          background: '#f8f9fa',
-          border: '1px dashed #dee2e6',
-          borderRadius: '8px',
-          padding: '2rem',
-          textAlign: 'center',
-          margin: '3rem 0',
-          color: '#6c757d'
-        }}>
-          <div style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>REKLAM</div>
-          <div style={{ fontSize: '0.9rem' }}>Reklam Alanı (728x90 veya Responsive)</div>
-        </div>
+        {renderAd('bottom')}
+
+        {/* YouTube Video */}
+        {article.youtubeVideoId && (
+          <div style={{
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '12px',
+            marginTop: '3rem',
+            border: '1px solid #e9ecef'
+          }}>
+            <h3 style={{ marginBottom: '1.5rem', color: '#212529', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '1.5rem' }}>🎥</span>
+              İlgili Video
+            </h3>
+            <div style={{
+              position: 'relative',
+              paddingBottom: '56.25%', // 16:9 aspect ratio
+              height: 0,
+              overflow: 'hidden',
+              borderRadius: '8px'
+            }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${article.youtubeVideoId}`}
+                title="İlgili YouTube Videosu"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%'
+                }}
+              />
+            </div>
+            <p style={{ marginTop: '1rem', color: '#6c757d', fontSize: '0.9rem' }}>
+              Bu konuyla ilgili detaylı bilgi için yukarıdaki videoyu izleyebilirsiniz.
+            </p>
+          </div>
+        )}
 
         {/* Related Articles */}
         <div style={{

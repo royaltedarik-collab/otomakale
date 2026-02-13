@@ -99,7 +99,12 @@ export default function AdminPanel() {
       { icon: '💡', text: 'Pratik İpuçları' }
     ],
     heroTitle: 'AI, Teknoloji ve Verimlilik Üzerine Güncel İçerikler',
-    heroSubtitle: 'Yapay zeka araçları, otomasyon teknikleri ve dijital pazarlama stratejileri hakkında her gün yeni makaleler'
+    heroSubtitle: 'Yapay zeka araçları, otomasyon teknikleri ve dijital pazarlama stratejileri hakkında her gün yeni makaleler',
+    menuLinks: [
+      { text: 'Ana Sayfa', url: '/', enabled: true },
+      { text: 'Kategoriler', url: '/kategoriler', enabled: true },
+      { text: 'Hakkında', url: '/hakkinda', enabled: true }
+    ]
   });
 
   // Site ayarlarını yükle
@@ -136,6 +141,29 @@ export default function AdminPanel() {
     setSiteSettings(prev => ({
       ...prev,
       heroBadges: prev.heroBadges.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateMenuLink = (index, field, value) => {
+    setSiteSettings(prev => ({
+      ...prev,
+      menuLinks: prev.menuLinks.map((link, i) => 
+        i === index ? { ...link, [field]: value } : link
+      )
+    }));
+  };
+
+  const addMenuLink = () => {
+    setSiteSettings(prev => ({
+      ...prev,
+      menuLinks: [...prev.menuLinks, { text: 'Yeni Link', url: '#', enabled: true }]
+    }));
+  };
+
+  const removeMenuLink = (index) => {
+    setSiteSettings(prev => ({
+      ...prev,
+      menuLinks: prev.menuLinks.filter((_, i) => i !== index)
     }));
   };
 
@@ -555,42 +583,6 @@ export default function AdminPanel() {
                 </div>
               </div>
             </div>
-
-            {/* Save Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-              <button
-                onClick={handleSave}
-                style={{
-                  padding: '1rem 3rem',
-                  background: '#667eea',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
-                }}
-              >
-                💾 Ayarları Kaydet
-              </button>
-            </div>
-
-            {saved && (
-              <div style={{
-                position: 'fixed',
-                bottom: '2rem',
-                right: '2rem',
-                background: '#28a745',
-                color: 'white',
-                padding: '1rem 2rem',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                fontWeight: '600'
-              }}>
-                ✅ Ayarlar kaydedildi!
-              </div>
-            )}
           </div>
         )}
 
@@ -871,6 +863,82 @@ export default function AdminPanel() {
                 </div>
               </div>
             </div>
+
+            {/* Menü Linkleri */}
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: '600', margin: 0 }}>
+                  🔗 Menü Linkleri (Header)
+                </h2>
+                <button
+                  onClick={addMenuLink}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500'
+                  }}
+                >
+                  + Link Ekle
+                </button>
+              </div>
+
+              {siteSettings.menuLinks?.map((link, index) => (
+                <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr 2fr auto auto', gap: '0.5rem', marginBottom: '0.75rem', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    value={link.text}
+                    onChange={(e) => updateMenuLink(index, 'text', e.target.value)}
+                    placeholder="Link Metni"
+                    style={{
+                      padding: '0.75rem',
+                      border: '1px solid #dee2e6',
+                      borderRadius: '8px',
+                      fontSize: '1rem'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={link.url}
+                    onChange={(e) => updateMenuLink(index, 'url', e.target.value)}
+                    placeholder="/sayfa-url"
+                    style={{
+                      padding: '0.75rem',
+                      border: '1px solid #dee2e6',
+                      borderRadius: '8px',
+                      fontSize: '1rem'
+                    }}
+                  />
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap', padding: '0 0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={link.enabled}
+                      onChange={(e) => updateMenuLink(index, 'enabled', e.target.checked)}
+                      style={{ width: '18px', height: '18px' }}
+                    />
+                    <span style={{ fontSize: '0.9rem' }}>Aktif</span>
+                  </label>
+                  <button
+                    onClick={() => removeMenuLink(index)}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      background: '#dc3545',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -889,8 +957,10 @@ export default function AdminPanel() {
                   Yeni Kullanıcı Adı
                 </label>
                 <input
+                  id="newUsername"
                   type="text"
                   placeholder="admin"
+                  defaultValue="admin"
                   style={{
                     width: '100%',
                     padding: '0.75rem',
@@ -905,6 +975,7 @@ export default function AdminPanel() {
                   Yeni Şifre
                 </label>
                 <input
+                  id="newPassword"
                   type="password"
                   placeholder="••••••••"
                   style={{
@@ -917,6 +988,16 @@ export default function AdminPanel() {
                 />
               </div>
               <button
+                onClick={() => {
+                  const username = document.getElementById('newUsername').value;
+                  const password = document.getElementById('newPassword').value;
+                  if (username && password) {
+                    localStorage.setItem('adminCredentials', JSON.stringify({ username, password }));
+                    alert('✅ Şifre başarıyla güncellendi! Yeni bilgilerle giriş yapabilirsiniz.');
+                  } else {
+                    alert('⚠️ Lütfen tüm alanları doldurun!');
+                  }
+                }}
                 style={{
                   padding: '0.75rem 2rem',
                   background: '#667eea',
@@ -927,12 +1008,52 @@ export default function AdminPanel() {
                   fontWeight: '600'
                 }}
               >
-                Şifreyi Güncelle
+                🔒 Şifreyi Güncelle
               </button>
             </div>
           </div>
         )}
+
+        {/* Save Button - Visible on all tabs except analytics */}
+        {(activeTab === 'ads' || activeTab === 'settings') && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
+            <button
+              onClick={handleSave}
+              style={{
+                padding: '1rem 3rem',
+                background: '#667eea',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+              }}
+            >
+              💾 Ayarları Kaydet
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Success Message */}
+      {saved && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          background: '#28a745',
+          color: 'white',
+          padding: '1rem 2rem',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          fontWeight: '600',
+          zIndex: 1000
+        }}>
+          ✅ Ayarlar kaydedildi!
+        </div>
+      )}
     </div>
   );
 }

@@ -13,7 +13,12 @@ export default function Home() {
       { icon: '💡', text: 'Pratik İpuçları' }
     ],
     heroTitle: 'AI, Teknoloji ve Verimlilik Üzerine Güncel İçerikler',
-    heroSubtitle: 'Yapay zeka araçları, otomasyon teknikleri ve dijital pazarlama stratejileri hakkında her gün yeni makaleler'
+    heroSubtitle: 'Yapay zeka araçları, otomasyon teknikleri ve dijital pazarlama stratejileri hakkında her gün yeni makaleler',
+    menuLinks: [
+      { text: 'Ana Sayfa', url: '/', enabled: true },
+      { text: 'Kategoriler', url: '/kategoriler', enabled: true },
+      { text: 'Hakkında', url: '/hakkinda', enabled: true }
+    ]
   });
 
   useEffect(() => {
@@ -45,9 +50,11 @@ export default function Home() {
             </h1>
           </a>
           <nav style={{ display: 'flex', gap: '2rem' }}>
-            <a href="/" style={{ color: '#495057', textDecoration: 'none', fontWeight: '500' }}>Ana Sayfa</a>
-            <a href="#" style={{ color: '#495057', textDecoration: 'none', fontWeight: '500' }}>Kategoriler</a>
-            <a href="#" style={{ color: '#495057', textDecoration: 'none', fontWeight: '500' }}>Hakkında</a>
+            {siteSettings.menuLinks?.filter(link => link.enabled).map((link, i) => (
+              <a key={i} href={link.url} style={{ color: '#495057', textDecoration: 'none', fontWeight: '500' }}>
+                {link.text}
+              </a>
+            ))}
           </nav>
         </div>
       </header>
