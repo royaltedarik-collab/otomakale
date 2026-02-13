@@ -1,6 +1,30 @@
 import { useState, useEffect } from 'react';
+import fs from 'fs';
+import path from 'path';
 
-export default function Home() {
+export async function getStaticProps() {
+  // Makaleleri data/articles.json'dan oku
+  let articles = [];
+  
+  try {
+    const filePath = path.join(process.cwd(), 'data', 'articles.json');
+    if (fs.existsSync(filePath)) {
+      const fileContents = fs.readFileSync(filePath, 'utf8');
+      articles = JSON.parse(fileContents);
+    }
+  } catch (error) {
+    console.error('Makaleler yüklenemedi:', error);
+  }
+
+  return {
+    props: {
+      articles: articles.slice(0, 6) // İlk 6 makale
+    },
+    revalidate: 60 // Her 60 saniyede bir yeniden oluştur
+  };
+}
+
+export default function Home({ articles: serverArticles }) {
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
   const [siteSettings, setSiteSettings] = useState({
     siteName: 'TeknoVeAI',
@@ -26,7 +50,8 @@ export default function Home() {
     if (saved) setSiteSettings(JSON.parse(saved));
   }, []);
 
-  const articles = [
+  // Makaleleri hazırla - server'dan gelen veya demo
+  const demoArticles = [
     { id: 1, title: "ChatGPT Alternatifleri 2026: En İyi 10 Ücretsiz AI Yazma Aracı", excerpt: "ChatGPT'ye alternatif olarak kullanabileceğiniz, bazıları tamamen ücretsiz olan en iyi yapay zeka yazma araçlarını keşfedin...", category: "AI Araçları", date: "13 Şubat 2026", readTime: "8 dk", image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop" },
     { id: 2, title: "Pomodoro Tekniği ile Verimliliğinizi 2 Katına Çıkarın", excerpt: "Zaman yönetiminde devrim yaratan Pomodoro Tekniği'ni nasıl uygulayacağınızı öğrenin...", category: "Verimlilik", date: "13 Şubat 2026", readTime: "6 dk", image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=400&fit=crop" },
     { id: 3, title: "İş Süreçleri Otomasyonu: Zapier Alternatifleri", excerpt: "İş süreçlerinizi otomatikleştirmek için Zapier'e alternatif no-code araçları keşfedin...", category: "Otomasyon", date: "12 Şubat 2026", readTime: "10 dk", image: "https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?w=800&h=400&fit=crop" },
