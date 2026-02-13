@@ -96,7 +96,7 @@ async function generateLSIKeywords(mainKeyword) {
   
   const completion = await groq.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
-    model: 'llama-3.1-70b-versatile',
+    model: 'llama-3.3-70b-versatile',
     temperature: 0.7,
     max_tokens: 200
   });
@@ -182,7 +182,7 @@ async function generateAuthoritativeLinks(keyword) {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const completion = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'llama-3.1-70b-versatile',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.5,
       max_tokens: 200
     });
@@ -231,7 +231,7 @@ Makaleyi Markdown formatında yaz. Başlık H1 olsun.`;
 
   const completion = await groq.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
-    model: 'llama-3.1-70b-versatile',
+    model: 'llama-3.3-70b-versatile',
     temperature: 0.8,
     max_tokens: 4000
   });
@@ -278,7 +278,7 @@ async function generateMetaDescription(content) {
   
   const completion = await groq.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
-    model: 'llama-3.1-70b-versatile',
+    model: 'llama-3.3-70b-versatile',
     temperature: 0.7,
     max_tokens: 100
   });
