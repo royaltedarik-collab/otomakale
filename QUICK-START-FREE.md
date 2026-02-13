@@ -15,8 +15,8 @@ Bu rehber, AI blog sistemini **5 adımda** ve **tamamen ücretsiz** olarak çal�
 
 ## 📋 Gereksinimler
 
-- [ ] GitHub hesabı (ücretsiz)
-- [ ] Vercel hesabı (ücretsiz)
+- [hazır ] GitHub hesabı (ücretsiz)
+- [hazır ] Vercel hesabı (ücretsiz)
 - [ ] Groq API key (ücretsiz)
 - [ ] Google Gemini API key (ücretsiz)
 - [ ] Twitter API keys (ücretsiz)
