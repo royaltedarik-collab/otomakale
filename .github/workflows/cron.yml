@@ -72,7 +72,7 @@ jobs:
           echo "✅ Generated article ID: $ARTICLE_ID"
       
       - name: SEO and Indexing
-        if: steps.generate.outputs.ARTICLE_ID != ''
+        if: steps.generate.outputs.ARTICLE_ID != '' && false
         env:
           GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
           GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
@@ -87,7 +87,7 @@ jobs:
           node automation/seo-indexer.js ${{ steps.generate.outputs.ARTICLE_ID }}
       
       - name: Social Media Sharing
-        if: steps.generate.outputs.ARTICLE_ID != ''
+        if: steps.generate.outputs.ARTICLE_ID != '' && false
         env:
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
           TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
@@ -120,8 +120,13 @@ jobs:
       - name: Notify on success
         if: success()
         run: |
-          echo "✅ Article generated and published successfully!"
-          echo "Article ID: ${{ steps.generate.outputs.ARTICLE_ID }}"
+          echo "✅ Makale başarıyla oluşturuldu ve kaydedildi!"
+          echo "📄 Article ID: ${{ steps.generate.outputs.ARTICLE_ID }}"
+          echo "💾 Database: ./database/articles.json"
+          echo "📦 Artifacts'tan indirebilirsiniz"
+          echo ""
+          echo "⚠️  Not: SEO indexing ve sosyal medya paylaşımı geçici devre dışı"
+          echo "   (Database entegrasyonu tamamlandığında aktif edilecek)"
       
       - name: Notify on failure
         if: failure()
