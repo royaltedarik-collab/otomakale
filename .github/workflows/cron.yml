@@ -42,7 +42,7 @@ jobs:
           SITE_URL: ${{ secrets.SITE_URL }}
           SITE_NAME: ${{ secrets.SITE_NAME }}
           SITE_DESCRIPTION: ${{ secrets.SITE_DESCRIPTION }}
-          DATABASE_PATH: ./database/blog.db
+          DATABASE_PATH: ./database/articles.json
           AUTO_PUBLISH: true
           POSTS_PER_DAY: 3
           PUBLISH_HOURS: 09,14,19
@@ -56,12 +56,20 @@ jobs:
           IMAGE_HEIGHT: 630
           NODE_ENV: production
         run: |
-          node automation/content-generator.js > /tmp/generate.log 2>&1
-          cat /tmp/generate.log
-          # Article ID'yi çıkar (son satırdan)
+          echo "🚀 Makale üretimi başlıyor..."
+          node automation/content-generator.js 2>&1 | tee /tmp/generate.log
+          
+          # Hata kontrolü
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "❌ Makale üretimi başarısız!"
+            cat /tmp/generate.log
+            exit 1
+          fi
+          
+          # Article ID'yi çıkar
           ARTICLE_ID=$(grep "ID:" /tmp/generate.log | tail -1 | awk '{print $NF}')
           echo "ARTICLE_ID=$ARTICLE_ID" >> $GITHUB_OUTPUT
-          echo "Generated article ID: $ARTICLE_ID"
+          echo "✅ Generated article ID: $ARTICLE_ID"
       
       - name: SEO and Indexing
         if: steps.generate.outputs.ARTICLE_ID != ''
