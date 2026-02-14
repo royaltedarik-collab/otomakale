@@ -149,7 +149,10 @@ jobs:
           else
             echo "✅ Değişiklik tespit edildi, commit ediliyor..."
             git commit -m "🤖 Yeni makale eklendi: Article #${{ steps.generate.outputs.ARTICLE_ID }} [skip ci]"
-            git push
+            
+            # GITHUB_TOKEN ile push
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+            
             echo "✅ Makale GitHub'a commit edildi ve Vercel'e deploy edilecek!"
           fi
       
