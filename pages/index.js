@@ -61,6 +61,20 @@ export default function Home({ articles: serverArticles }) {
   ];
 
   const categories = ["Tümü", "AI Araçları", "Verimlilik", "Otomasyon", "Dijital Pazarlama", "Teknoloji"];
+
+  // Gerçek makaleler varsa onları kullan, yoksa demo makaleleri göster
+  const articles = serverArticles && serverArticles.length > 0 
+    ? serverArticles.map(article => ({
+        id: article.id,
+        title: article.title,
+        excerpt: article.meta_description || article.content.substring(0, 150) + '...',
+        category: article.category,
+        date: new Date(article.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+        readTime: Math.ceil(article.content.split(/\s+/).length / 200) + ' dk',
+        image: `https://images.unsplash.com/photo-${Math.random() > 0.5 ? '1677442136019-21780ecad995' : '1484480974693-6ca0a78fb36b'}?w=800&h=400&fit=crop`
+      }))
+    : demoArticles;
+
   const filtered = selectedCategory === 'Tümü' ? articles : articles.filter(a => a.category === selectedCategory);
 
   return (
