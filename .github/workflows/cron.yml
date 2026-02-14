@@ -10,6 +10,9 @@ on:
   # Manuel tetikleme için
   workflow_dispatch:
 
+permissions:
+  contents: write  # Git push için gerekli
+
 jobs:
   generate-and-publish:
     runs-on: ubuntu-latest
@@ -120,6 +123,8 @@ jobs:
       - name: Commit articles to repository
         if: success() && steps.generate.outputs.ARTICLE_ID != ''
         run: |
+          echo "📝 Makale GitHub'a commit ediliyor..."
+          
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
@@ -127,13 +132,23 @@ jobs:
           mkdir -p data
           cp database/articles.json data/articles.json
           
+          echo "📂 Dosya içeriği:"
+          cat data/articles.json | head -20
+          
+          echo "📊 Makale sayısı:"
+          cat data/articles.json | jq length || echo "jq yok, sayı hesaplanamadı"
+          
           git add data/articles.json
+          
+          echo "🔍 Git status:"
+          git status
           
           # Değişiklik varsa commit et
           if git diff --staged --quiet; then
-            echo "📝 Yeni makale yok, commit atlanıyor"
+            echo "⚠️  Yeni makale yok veya değişiklik yok, commit atlanıyor"
           else
-            git commit -m "🤖 Yeni makale eklendi: Article #${{ steps.generate.outputs.ARTICLE_ID }}"
+            echo "✅ Değişiklik tespit edildi, commit ediliyor..."
+            git commit -m "🤖 Yeni makale eklendi: Article #${{ steps.generate.outputs.ARTICLE_ID }} [skip ci]"
             git push
             echo "✅ Makale GitHub'a commit edildi ve Vercel'e deploy edilecek!"
           fi
